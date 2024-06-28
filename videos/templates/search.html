@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subtitle Search</title>
+</head>
+<body>
+    <h1>Search Subtitles</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Search</button>
+    </form>
+
+    {% if results %}
+        <h2>Results:</h2>
+        <ul>
+            {% for result in results %}
+                <li>
+                    <p>Subtitle: {{ result.subtitles }}</p>
+                    <p>Start Time: {{ result.start_time|slice:":8" }}</p>
+                    <p>End Time: {{ result.end_time|slice:":8" }}</p>
+                    <p>Video Link: <a href="{{ result.video_link }}" target="_blank">{{ result.video_link }}</a></p>
+                </li>
+                {% endfor %}
+        </ul>
+    {% else %}
+        <p>No results found.</p>
+    {% endif %}
+</body>
+</html>
