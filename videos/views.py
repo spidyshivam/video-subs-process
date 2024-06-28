@@ -4,12 +4,13 @@ from django.conf import settings
 from django.http import JsonResponse
 import boto3
 from videos.tasks import process_video
-from .forms import SubtitleSearchForm
+from .forms import SubtitleSearchForm, VideoUploadForm  # Import VideoUploadForm
 
 
 def upload_view(request):
-    if request.method == 'POST' and request.FILES.get('video'):
-        video = request.FILES['video']
+    form = VideoUploadForm(request.POST, request.FILES)  # Create form instance
+    if form.is_valid():  # Check if form is valid
+        video = form.cleaned_data['video']  # Get video from form
         input_folder = os.path.join(settings.MEDIA_ROOT, 'input')
         os.makedirs(input_folder, exist_ok=True)
         temp_path = os.path.join(input_folder, video.name)
@@ -18,7 +19,8 @@ def upload_view(request):
                 destination.write(chunk)
         process_video.delay(temp_path)
         return JsonResponse({'message':'Video Uploaded Successfully'})
-    return render(request, 'upload.html')
+    return render(request, 'upload.html', {'form': form})  # Pass form to template
+
 
 def search_subtitles(request):
     form = SubtitleSearchForm()
