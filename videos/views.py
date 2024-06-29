@@ -18,7 +18,7 @@ def upload_view(request):
             for chunk in video.chunks():
                 destination.write(chunk)
         process_video.delay(temp_path)
-        return JsonResponse({'message':'Video Uploaded Successfully'})
+        return render(request, 'upload_success.html')  # Render upload_success.html upon successful upload
     return render(request, 'upload.html', {'form': form})  # Pass form to template
 
 
